@@ -44,5 +44,4 @@ public class SongsListView extends ArrayAdapter<String> {
 
     };
 
-
 }

@@ -45,15 +45,8 @@ public class SwipeAdapter extends PagerAdapter {
         textView.setText(textRes[position]);
         container.addView(item_view);
 
-
-
-
         return item_view;
-
-
     }
-
-
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {

@@ -12,8 +12,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-public class Activity extends AppCompatActivity {
+public class SearchHistoryActivity extends AppCompatActivity {
     ArrayList<String> arrayList;
     ArrayAdapter<String> arrayAdapter;
     ListView listView;
@@ -31,17 +32,11 @@ public class Activity extends AppCompatActivity {
         tabPomoc = tabelaPrzedPodzialem.split("/");
         arrayList= new ArrayList<String>();
 
-        for (String jeden: tabPomoc)
-            arrayList.add(jeden);
+        arrayList.addAll(Arrays.asList(tabPomoc));
 
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1, arrayList);
         listView = findViewById(R.id.history);
         listView.setAdapter(arrayAdapter);
-
-
-
-
-
 
         SwipeDismissListViewTouchListener touchListener =
                 new SwipeDismissListViewTouchListener(
@@ -60,7 +55,6 @@ public class Activity extends AppCompatActivity {
                                     arrayAdapter.notifyDataSetChanged();
 
                                 }
-
                             }
                         });
         listView.setOnTouchListener(touchListener);
@@ -71,7 +65,7 @@ public class Activity extends AppCompatActivity {
                 sharedPreferences.edit().putBoolean("czyMain", false).apply();
                 sharedPreferences.edit().putString("query", arrayList.get(position).split("/")[0].split("Date")[0].replace("Query: ", "").replace("\"", "")).apply();
 
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                startActivity(new Intent(getApplicationContext(), FindSongActivity.class));
             }
         });
 

@@ -10,12 +10,10 @@ import android.os.AsyncTask;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import androidx.appcompat.widget.Toolbar;
 import android.widget.Toast;
 
 import org.jsoup.Jsoup;
@@ -23,16 +21,14 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MySongsActivity extends AppCompatActivity {
 
-    Toolbar toolbar;
     ListView lv_languages;
     ArrayAdapter<String> language_adapter;
     ArrayList<String> languagesarraylist;
     Bundle extras;
-    public static String wykonawca;
-    public static String tytul;
     String wykonawcaTytul;
     SharedPreferences sharedPreferences;
     Intent intent, loading;
@@ -45,15 +41,10 @@ public class MySongsActivity extends AppCompatActivity {
     String[] titleArray;
     SongsListView songsListView;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_songs);
-
-
-
 
         sharedPreferences = this.getSharedPreferences("com.music.finder", Context.MODE_PRIVATE);
         intent = new Intent(this, MusicActivity.class);
@@ -62,7 +53,6 @@ public class MySongsActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
-            //we are connected to a network
             connected = true;
         }
         else{
@@ -71,16 +61,12 @@ public class MySongsActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setTitle("NO INTERNET CONNECTION")
                     .setMessage("Please check your internet connection")
-
-                    // Specifying a listener allows you to take an action before dismissing the dialog.
-                    // The dialog is automatically dismissed when a dialog button is clicked.
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             finishActivity(1);
                         }
                     })
 
-                    // A null listener allows the button to dismiss the dialog and take no further action.
                     .setNegativeButton(android.R.string.no, null)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
@@ -89,12 +75,8 @@ public class MySongsActivity extends AppCompatActivity {
         extras = getIntent().getExtras();
         languagesarraylist = new ArrayList<String>();
 
-        Bundle bundle = getIntent().getExtras();
         listView = findViewById(R.id.songsList);
-
-
         wykonawcaTytul = sharedPreferences.getString("friends", "");
-        Log.i("EEEELLLOOO MOOOTTTOOOO", wykonawcaTytul);
 
 
         if (wykonawcaTytul.contains("%/%")&&notSegmented.length!=1){
@@ -118,9 +100,7 @@ public class MySongsActivity extends AppCompatActivity {
                                         artist.remove(position);
                                         title.remove(position);
                                         songsListView.notifyDataSetChanged();
-
                                     }
-
                                 }
                             });
             lv_languages.setOnTouchListener(touchListener);
@@ -129,61 +109,29 @@ public class MySongsActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String rozdziel = languagesarraylist.get(position);
-                    Log.i("ITEEEM IINNN LISST VIEW", rozdziel);
                     String[] jeden = rozdziel.split("-");
-                    Log.i("ITEEEM IINNN LISST VIEW", jeden[0]);
-                    Log.i("ITEEEM IINNN LISST VIEW", jeden[1]);
-                    // intent.putExtra("Wykonawca", jeden[0]);
-                    //intent.putExtra("Tytul", jeden[1]);
                     sharedPreferences.edit().putString("artist", jeden[1]).apply();
                     sharedPreferences.edit().putString("title", jeden[0]).apply();
-
                     startActivity(loading);
                     loading.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     new loadData().execute();
-
-
                 }
             });
         }
         else
             Toast.makeText(this, "Your library is empty, add some songs first", Toast.LENGTH_SHORT).show();
-
-
-
-
-        //languagesarraylist.add(wykonawcaTytul);
-
-
-
-        //setting array adaptet to listview
-
-
-
-
-
-
-
-
     }
 
     public class loadData extends AsyncTask<Void, Void, Void>
     {
 
         String lyrics3 = "", ytID3 = "", ytID3Czyste = "", lyrics3Czyste = "", title= sharedPreferences.getString("artist",""), artist = sharedPreferences.getString("title", "");
-
-
         Document htmlGet, tekst, doc;
-
         int a_int_drugi = 47;
-
 
         public Boolean ifLyricsOfThatSong(String artysta, String tytul, int x, Document songHTML)
         {
-
             String htmlTag1 = songHTML.select("a").eq(x).text();
-
-
 
             if (htmlTag1.contains("-")) {
                 if (htmlTag1.split("-")[0].replace(" ", "").toUpperCase().equals(artysta.replace(" ", "").toUpperCase()) && htmlTag1.split("-")[1].replace(" ", "").toUpperCase().equals(tytul.replace(" ", "").toUpperCase()))
@@ -193,18 +141,10 @@ public class MySongsActivity extends AppCompatActivity {
             }
             else
                 return false;
-
-
         }
-
-
-
 
         @Override
         protected Void doInBackground(Void... voids) {
-
-            Log.i("DASDSADSADSDSADSADSA", artist);
-            Log.i("DASDSADSADSDSADSADSA", title);
 
             try {
                 doc = (Document) Jsoup.connect("https://www.youtube.com/results?search_query=" + artist+"-"+title).get();
@@ -217,12 +157,12 @@ public class MySongsActivity extends AppCompatActivity {
                     }
                 });
                 e.printStackTrace();
+                cancel(true);
             }
             while(!doc.select("a").eq(a_int_drugi).text().contains("-"))
             {
                 a_int_drugi++;
             }
-
 
             String[] wykonawcaRozdzielony = artist.split(" ");
             String[] tytulRozdzielony = title.split(" ");
@@ -241,8 +181,6 @@ public class MySongsActivity extends AppCompatActivity {
                 tytulString+= tytul + "+";
             }
 
-
-
             try {
                 htmlGet = Jsoup.connect("https://www.tekstowo.pl/szukaj,wykonawca," + wykonawcaString +",tytul,"+tytulString+".html").get();
             } catch (IOException e) {
@@ -254,6 +192,7 @@ public class MySongsActivity extends AppCompatActivity {
                     }
                 });
                 e.printStackTrace();
+                cancel(true);
             }
 
             while (!ifLyricsOfThatSong(artist, title, muzyka1, htmlGet)&&muzyka1<91) {
@@ -261,7 +200,6 @@ public class MySongsActivity extends AppCompatActivity {
                 if(ifLyricsOfThatSong(artist, title, muzyka1, htmlGet))
                 {
                     verify="found";
-                    Log.i("PRZERWANO", "PRZERWANO");
                     break;
                 }
             }
@@ -280,6 +218,7 @@ public class MySongsActivity extends AppCompatActivity {
                             Toast.makeText(MySongsActivity.this, "An error occured, please try again", Toast.LENGTH_SHORT).show();
                         }
                     });
+                    cancel(true);
                 }
                 lyrics3 = tekst.select("div.song-text").outerHtml();
                 lyrics3Czyste = lyrics3.replace("<h2>Tekst piosenki:</h2>", "").replace("<br>", "\n").replace("<div class=\"song-text\">", "").split("<p>")[0];
@@ -298,6 +237,7 @@ public class MySongsActivity extends AppCompatActivity {
                             Toast.makeText(MySongsActivity.this, "An error occured, please try again", Toast.LENGTH_SHORT).show();
                         }
                     });
+                    cancel(true);
                 }
                 lyrics3 = tekst.select("div.song-text").outerHtml();
                 lyrics3Czyste = lyrics3.replace("<h2>Tekst piosenki:</h2>", "").replace("<br>", "\n").replace("<div class=\"song-text\">", "").split("<p>")[0];
@@ -305,17 +245,12 @@ public class MySongsActivity extends AppCompatActivity {
             else
                 lyrics3Czyste="Lyrics not found";
 
-
-            Log.i("TEEEEEKKSSTT AUUUU", lyrics3Czyste);
             ytID3 = doc.select("a").eq(a_int_drugi).attr("href");
             ytID3Czyste = ytID3.replace("https://www.youtube.com/watch?v=", "").replace("/watch?v=", "");
-            Log.i("IIIII AAAJJDDIII AUU", ytID3Czyste);
             intent.putExtra("Wykonawca", artist);
             intent.putExtra("Tytul", title);
             intent.putExtra("Tekst", lyrics3Czyste);
             intent.putExtra("YTid", ytID3Czyste);
-
-
 
             return null;
         }
@@ -328,19 +263,11 @@ public class MySongsActivity extends AppCompatActivity {
         }
     }
 
-
-
-
-
     private void init() {
 
         String[] dataSplitted = wykonawcaTytul.split("%/%");
 
-        for (int i=0; i<dataSplitted.length; i++)
-        {
-            languagesarraylist.add(dataSplitted[i]);
-        }
-        Log.i("TTEEEEXXXT", languagesarraylist.toString());
+        languagesarraylist.addAll(Arrays.asList(dataSplitted));
         for (int i=0; i<languagesarraylist.size(); i++)
         {
             notSegmented=languagesarraylist.get(i).split("-");
@@ -362,11 +289,7 @@ public class MySongsActivity extends AppCompatActivity {
         }
 
         songsListView = new SongsListView(this, artist, title);
-
-
         language_adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_activated_1,languagesarraylist);
-
-
         lv_languages = (ListView) findViewById(R.id.songsList);
     }
 }

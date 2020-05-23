@@ -9,22 +9,18 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -38,7 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class MainActivity extends AppCompatActivity {
+public class FindSongActivity extends AppCompatActivity {
 
     TextView czyTo;
     ProgressBar progressBar;
@@ -46,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
     EditText editText;
     TextView textView;
     Button getSong;
-    Boolean songGot = false;
     CheckBox checkBox;
     CheckBox checkBox2;
     CheckBox checkBox3;
@@ -62,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
     String ytID1;
     String ytID2;
     String ytID3;
-    private AdView mAdView;
 
     String lyrics1Czyste;
     String lyrics2Czyste;
@@ -75,9 +69,6 @@ public class MainActivity extends AppCompatActivity {
     Boolean thirdFound = false;
     boolean connected = false;
     SharedPreferences sharedPreferences;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,10 +84,10 @@ public class MainActivity extends AppCompatActivity {
         checkBox3 = findViewById(R.id.checkBox3);
         progressBar = findViewById(R.id.progressBar);
         sharedPreferences = this.getSharedPreferences("com.music.finder", Context.MODE_PRIVATE);
-        Boolean czyMain = sharedPreferences.getBoolean("czyMain", true);
+        boolean czyMain = sharedPreferences.getBoolean("czyMain", true);
         String query = sharedPreferences.getString("query", "");
         MobileAds.initialize(this,"ca-app-pub-1029819886833987~7929650316");
-        mAdView = findViewById(R.id.adView);
+        AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
@@ -108,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
-            //we are connected to a network
+
             connected = true;
         }
         else{
@@ -117,24 +108,16 @@ public class MainActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setTitle("NO INTERNET CONNECTION")
                     .setMessage("Please check your internet connection")
-
-                    // Specifying a listener allows you to take an action before dismissing the dialog.
-                    // The dialog is automatically dismissed when a dialog button is clicked.
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             finish();
                         }
                     })
 
-                    // A null listener allows the button to dismiss the dialog and take no further action.
                     .setNegativeButton(android.R.string.no, null)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
         }
-
-
-
-
 
         final Intent intent = new Intent(this, MusicActivity.class);
 
@@ -192,15 +175,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-
         final InputMethodManager inputManager = (InputMethodManager)
                 getSystemService(Context.INPUT_METHOD_SERVICE);
-
-
-
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,9 +184,9 @@ public class MainActivity extends AppCompatActivity {
                 inputManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 
                 if (editText.getText().toString().equals(""))
-                    Toast.makeText(MainActivity.this, "Please, give me some text first", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FindSongActivity.this, "Please, give me some text first", Toast.LENGTH_SHORT).show();
                 else {
-                    new doIt().execute();
+                    new findSongTask().execute();
                     czyTo.setVisibility(View.VISIBLE);
                     button.setVisibility(View.INVISIBLE);
                     editText.setVisibility(View.INVISIBLE);
@@ -219,28 +195,21 @@ public class MainActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.VISIBLE);
                     sharedPreferences.edit().putString("history", sharedPreferences.getString("history", "") + "Query: " + "\"" +editText.getText().toString() +"\"" + "\n"+ "Date: " +new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss").format(Calendar.getInstance().getTime()) + "/").apply();
                 }
-
-
                 }
 
 
 
             }
-
-
         );
-
-
-
 
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_FORWARD)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
                     if (editText.getText().toString().equals(""))
-                        Toast.makeText(MainActivity.this, "Please, give me some text first", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(FindSongActivity.this, "Please, give me some text first", Toast.LENGTH_SHORT).show();
                     else {
-                        new doIt().execute();
+                        new findSongTask().execute();
                         czyTo.setVisibility(View.VISIBLE);
                         button.setVisibility(View.INVISIBLE);
                         editText.setVisibility(View.INVISIBLE);
@@ -253,8 +222,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-
 
         getSong.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -293,11 +260,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public class doIt extends AsyncTask<Void, Void, Void>
+    public class findSongTask extends AsyncTask<Void, Void, Void>
     {
-        public Boolean ifSong(Document doc, int a){
+        public Boolean ifSong(Document doc, int a){ //SPRAWDZAM CZY ZNALEZIONY UTWÓR JEST PIOSENKĄ, SPRAWDZAJĄC CZY ISTNIEJE JEGO TEKST
             String wyraz = doc.select("a").eq(a).text();
-            Log.i("WYRRRAZ DO ROZDZIELENIA", wyraz);
             String[] rozdzielone = wyraz.split("-");
             Document html1Get;
             String zawartosc = null;
@@ -310,17 +276,15 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         finish();
-                        Toast.makeText(MainActivity.this, "An error occured during loading data", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(FindSongActivity.this, "An error occured during loading data", Toast.LENGTH_SHORT).show();
                     }
                 });
+                cancel(true);
             }
 
             if (zawartosc!=null)
             {
-                if (zawartosc.contains("brak wyników wyszukiwania"))
-                    return false;
-                else
-                    return true;
+                return !zawartosc.contains("brak wyników wyszukiwania");
             }
             else
                 return false;
@@ -329,11 +293,7 @@ public class MainActivity extends AppCompatActivity {
 
         public Boolean ifLyricsOfThatSong(String artysta, String tytul, int x, Document songHTML)
         {
-
             String htmlTag1 = songHTML.select("a").eq(x).text();
-
-
-
             if (htmlTag1.contains("-")) {
                 if (htmlTag1.split("-")[0].replace(" ", "").toUpperCase().equals(artysta.replace(" ", "").toUpperCase()) && htmlTag1.split("-")[1].replace(" ", "").toUpperCase().equals(tytul.replace(" ", "").toUpperCase()))
                     return true;
@@ -342,13 +302,10 @@ public class MainActivity extends AppCompatActivity {
             }
             else
                 return false;
-
-
         }
 
-        public void zalaczJednoPytanie()
+        public void zalaczJedenWynik() //JEZELI WPROWADZONA FRAZA DO SZUKANIA JEST KROTKA, WYSWIETLAM TYLKO JEDEN WYNIK
         {
-
             pytanie = editText.getText().toString();
             pytanieRozdzielone = pytanie.split(" ");
             if (pytanieRozdzielone.length==2) {
@@ -362,7 +319,6 @@ public class MainActivity extends AppCompatActivity {
             }
             else
                 zapytanieDoYTwStringu=pytanie;
-
             try{
                 doc = Jsoup.connect("https://www.youtube.com/results?search_query=" + zapytanieDoYTwStringu).get();
                 while(!firstFound)
@@ -372,10 +328,7 @@ public class MainActivity extends AppCompatActivity {
                             firstFound = true;
                         else {
                             a_int++;
-                           continue;
                         }
-
-
                     }
                     else
                         a_int++;
@@ -415,7 +368,6 @@ public class MainActivity extends AppCompatActivity {
                     if(ifLyricsOfThatSong(autorItytulTabCzyste[0], autorItytulTabCzyste[1], muzyka1, htmlGet))
                     {
                         verify="found";
-                        Log.i("PRZERWANO", "PRZERWANO");
                         break;
                     }
                 }
@@ -445,33 +397,25 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         checkBox3.setText("1. Artist: " + autorItytulTabCzyste[0] +"\n"+ " Title: " + autorItytulTabCzyste[1]);
-                        Log.d("WIADOMOSC", "CHECKBOX SET");
                         checkBox3.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
-
-
                     }
                 });
-
-
-
-
             }catch (IOException e){
                 e.printStackTrace();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         finish();
-                        Toast.makeText(MainActivity.this, "An error occured, please try again", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(FindSongActivity.this, "An error occured, please try again", Toast.LENGTH_SHORT).show();
                     }
                 });
+                cancel(true);
             }
 
         }
 
-
-
-        public void zalaczTrzyPytania()
+        public void zalaczPozostaleDwaWyniki() //JEZELI WPISANA FRAZA JEST DLUZSZA, WYSWIETLAM OPROCZ JEDNEGO POZOSTALE DWA WYNIKI
         {
             pytanie = editText.getText().toString();
             pytanieRozdzielone = pytanie.split(" ");
@@ -530,8 +474,6 @@ public class MainActivity extends AppCompatActivity {
                             a_int_trzeci++;
                             continue;
                         }
-
-
                     }
                     else
                         a_int_trzeci++;
@@ -545,12 +487,9 @@ public class MainActivity extends AppCompatActivity {
                     autorItytulTabCzysteDwa[1] = autorItytulTabDwa[0].replace("(Official Video)", "").replace("[OFFICIAL VIDEO]", "").replace("(Official Music Video)", "").replace("[Official Music Video]", "").replace("(Video)", "");
                     autorItytulTabCzysteDwa[0] = autorItytulTabDwa[1];
                 } else {
-
                     autorItytulTabCzysteDwa[0] = autorItytulTabDwa[0];
-
                     autorItytulTabCzysteDwa[1] = autorItytulTabDwa[1].replace("(Official Video)", "").replace("[OFFICIAL VIDEO]", "").replace("(Official Music Video)", "").replace("[Official Music Video]", "").replace("(Video)", "");
                 }
-
 
                 String[] wykonawcaRozdzielony = autorItytulTabCzysteDwa[0].split(" ");
                 String[] tytulRozdzielony = autorItytulTabCzysteDwa[1].split(" ");
@@ -598,9 +537,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 ytID2 = doc.select("a").eq(a_int_trzeci).attr("href");
-                Log.d("ID YOUTUBE", ytID2);
                 ytID2Czyste = ytID2.replace("https://www.youtube.com/watch?v=", "").replace("/watch?v=", "");
-
 
                 doc = Jsoup.connect("https://www.youtube.com/results?search_query=" + zapytanieDoYTwStringuTrzy).get();
                 while(!thirdFound)
@@ -610,10 +547,7 @@ public class MainActivity extends AppCompatActivity {
                             thirdFound = true;
                         else {
                             a_int_drugi++;
-                            continue;
                         }
-
-
                     }
                     else
                         a_int_drugi++;
@@ -626,12 +560,9 @@ public class MainActivity extends AppCompatActivity {
                         autorItytulTabCzysteTrzy[1] = autorItytulTabTrzy[0].replace("(Official Video)", "").replace("[OFFICIAL VIDEO]", "").replace("(Official Music Video)", "").replace("[Official Music Video]", "").replace("(Video)", "");
                         autorItytulTabCzysteTrzy[0] = autorItytulTabTrzy[1];
                     } else {
-
                         autorItytulTabCzysteTrzy[0] = autorItytulTabTrzy[0];
-
                         autorItytulTabCzysteTrzy[1] = autorItytulTabTrzy[1].replace("(Official Video)", "").replace("[OFFICIAL VIDEO]", "").replace("(Official Music Video)", "").replace("[Official Music Video]", "").replace("(Video)", "");
                     }
-
 
                     String[] wykonawcaRozdzielony1 = autorItytulTabCzysteTrzy[0].split(" ");
                     String[] tytulRozdzielony1 = autorItytulTabCzysteTrzy[1].split(" ");
@@ -676,46 +607,37 @@ public class MainActivity extends AppCompatActivity {
                     ytID3Czyste = ytID3.replace("https://www.youtube.com/watch?v=", "").replace("/watch?v=", "");
                 }
 
-
-
                 runOnUiThread(new Runnable() {
 
                     @Override
                     public void run() {
                         checkBox2.setText("2. Artist: " + autorItytulTabCzysteDwa[0] + "\n"+ " Title: " + autorItytulTabCzysteDwa[1]);
-                        Log.d("WIADOMOSC", "CHECKBOX SET");
                         if (!autorItyutlTrzy.contains("https")||!autorItyutlTrzy.contains("http")) {
                             checkBox.setText("3. Artist: " + autorItytulTabCzysteTrzy[0] + "\n" + " Title: " + autorItytulTabCzysteTrzy[1]);
                             checkBox.setVisibility(View.VISIBLE);
                         }
                         checkBox2.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
-
-
                     }
                 });
                 pytanieYTdwa.clear();
                 pytanieYTtrzy.clear();
 
-
             }catch (IOException e){
                 e.printStackTrace();
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         finish();
-                        Toast.makeText(MainActivity.this, "An error occured during loading data", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(FindSongActivity.this, "An error occured during loading data", Toast.LENGTH_SHORT).show();
                     }
                 });
+                cancel(true);
             }
-
-
-
         }
 
 
-        public String pytanie;
+        String pytanie;
         ArrayList<String> pytanieDwaTab = new ArrayList<>(); // STRING ZAWIERAJĄCY PIERWSZĄ POŁOWĘ ZAPYTANIA
         ArrayList<String> pytanieTrzyTab = new ArrayList<>(); // STRING ZAWIERAJĄCY DRUGĄ POŁOWĘ ZAPYTANIA
         String[] zapytanieDoYT= new String[3];
@@ -731,19 +653,10 @@ public class MainActivity extends AppCompatActivity {
         String[] autorItytulTabDwa;
         String[] autorItytulTabTrzy;
 
-
-        String[] autorTytul;
         String[] pytanieRozdzielone; // TABLICA ZAWIERAJĄCA FRAZĘ WYNOSZĄCĄ WIĘCEJ NIŻ DWA SŁOWA
-
-        ArrayList<String> muzykiLista = new ArrayList<String>();
-        ArrayAdapter<String> muzykiListView = new ArrayAdapter<String>( MainActivity.this, android.R.layout.simple_list_item_1, muzykiLista);
-
-
-
         Document doc;
         Document htmlGet;
         Document tekst;
-        Document ytIDconnect;
         int a_int = 47;
         int a_int_drugi = 47;
         int a_int_trzeci = 47;
@@ -752,33 +665,17 @@ public class MainActivity extends AppCompatActivity {
         int muzyka3 = 76;
 
 
-
         @Override
         protected Void doInBackground(Void... voids) {
             String[] tab = editText.getText().toString().split(" ");
             if (tab.length>2) {
-                zalaczJednoPytanie();
-                zalaczTrzyPytania();
+                zalaczJedenWynik();
+                zalaczPozostaleDwaWyniki();
             }else
-                zalaczJednoPytanie();
-
-
-
-
-
-
+                zalaczJedenWynik();
 
             return null;
         }
 
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-
-        }
-
     }
-
 }

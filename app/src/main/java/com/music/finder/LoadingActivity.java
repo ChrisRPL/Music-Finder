@@ -22,7 +22,7 @@ public class LoadingActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
-            //we are connected to a network
+
             connected = true;
         }
         else{
@@ -32,15 +32,12 @@ public class LoadingActivity extends AppCompatActivity {
                     .setTitle("NO INTERNET CONNECTION")
                     .setMessage("Please check your internet connection")
 
-                    // Specifying a listener allows you to take an action before dismissing the dialog.
-                    // The dialog is automatically dismissed when a dialog button is clicked.
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             finish();
                         }
                     })
 
-                    // A null listener allows the button to dismiss the dialog and take no further action.
                     .setNegativeButton(android.R.string.no, null)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();

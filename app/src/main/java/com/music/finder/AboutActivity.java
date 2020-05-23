@@ -9,18 +9,16 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Handler;
 
-
 import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 public class AboutActivity extends AppCompatActivity {
 
     boolean connected = false;
-    Button fb, ig, tw;
+    Button fb, ig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +32,6 @@ public class AboutActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
-            //we are connected to a network
             connected = true;
         }
         else{
@@ -44,15 +41,12 @@ public class AboutActivity extends AppCompatActivity {
                     .setTitle("NO INTERNET CONNECTION")
                     .setMessage("Please check your internet connection")
 
-                    // Specifying a listener allows you to take an action before dismissing the dialog.
-                    // The dialog is automatically dismissed when a dialog button is clicked.
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             finish();
                         }
                     })
 
-                    // A null listener allows the button to dismiss the dialog and take no further action.
                     .setNegativeButton(android.R.string.no, null)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
@@ -80,8 +74,6 @@ public class AboutActivity extends AppCompatActivity {
                 catch (Exception e)
                 {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/profile.php?id=100009213045029")));
-                    String errorMessage = (e.getMessage()==null)?"Message is empty":e.getMessage();
-                    Log.e("Unlock_ScreenActivity:F" ,errorMessage);
                 }
             }
         });
