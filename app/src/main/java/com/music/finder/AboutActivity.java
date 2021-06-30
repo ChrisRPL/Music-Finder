@@ -10,8 +10,10 @@ import android.net.Uri;
 import android.os.Handler;
 
 import android.os.Bundle;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.View;
 import android.widget.Button;
 
@@ -29,12 +31,11 @@ public class AboutActivity extends AppCompatActivity {
         ig = findViewById(R.id.button3);
 
 
-        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
             connected = true;
-        }
-        else{
+        } else {
             connected = false;
 
             new AlertDialog.Builder(this)
@@ -55,14 +56,12 @@ public class AboutActivity extends AppCompatActivity {
         fb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try
-                {
+                try {
                     Intent followIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("fb://profile/100009213045029"));
                     startActivity(followIntent);
 
                     final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable()
-                    {
+                    handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             Intent followIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("fb://profile/100009213045029"));
@@ -70,9 +69,7 @@ public class AboutActivity extends AppCompatActivity {
                         }
                     }, 1000 * 2);
 
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/profile.php?id=100009213045029")));
                 }
             }

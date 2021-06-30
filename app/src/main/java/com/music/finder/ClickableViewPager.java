@@ -3,11 +3,11 @@ package com.music.finder;
 import android.content.Context;
 
 import androidx.viewpager.widget.ViewPager;
+
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-
 
 
 public class ClickableViewPager extends ViewPager {
@@ -39,10 +39,6 @@ public class ClickableViewPager extends ViewPager {
         });
     }
 
-    public void setOnViewPagerClickListener(OnClickListener onClickListener) {
-        mOnClickListener = onClickListener;
-    }
-
     public interface OnClickListener {
         void onViewPagerClick(ViewPager viewPager);
     }
@@ -51,10 +47,11 @@ public class ClickableViewPager extends ViewPager {
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            if(mOnClickListener != null) {
+            if (mOnClickListener != null) {
                 mOnClickListener.onViewPagerClick(ClickableViewPager.this);
             }
 
             return true;
         }
-    }}
+    }
+}

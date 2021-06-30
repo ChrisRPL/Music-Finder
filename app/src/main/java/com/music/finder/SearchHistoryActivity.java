@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,15 +28,14 @@ public class SearchHistoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_);
-
         sharedPreferences = this.getSharedPreferences("com.music.finder", Context.MODE_PRIVATE);
         tabelaPrzedPodzialem = sharedPreferences.getString("history", "");
         tabPomoc = tabelaPrzedPodzialem.split("/");
-        arrayList= new ArrayList<String>();
+        arrayList = new ArrayList<>();
 
         arrayList.addAll(Arrays.asList(tabPomoc));
 
-        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1, arrayList);
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_activated_1, arrayList);
         listView = findViewById(R.id.history);
         listView.setAdapter(arrayAdapter);
 
@@ -50,7 +51,7 @@ public class SearchHistoryActivity extends AppCompatActivity {
                             @Override
                             public void onDismiss(ListView listView, int[] reverseSortedPositions) {
                                 for (int position : reverseSortedPositions) {
-                                    sharedPreferences.edit().putString("history",sharedPreferences.getString("history", "").replace(arrayList.get(position) + "/", "")).apply();
+                                    sharedPreferences.edit().putString("history", sharedPreferences.getString("history", "").replace(arrayList.get(position) + "/", "")).apply();
                                     arrayList.remove(position);
                                     arrayAdapter.notifyDataSetChanged();
 

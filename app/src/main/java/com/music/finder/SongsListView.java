@@ -22,19 +22,19 @@ public class SongsListView extends ArrayAdapter<String> {
         super(context, R.layout.list_songs, maintitle);
         // TODO Auto-generated constructor stub
 
-        this.context=context;
-        this.maintitle=maintitle;
-        this.subtitle=subtitle;
+        this.context = context;
+        this.maintitle = maintitle;
+        this.subtitle = subtitle;
 
     }
 
-    public View getView(int position,View view,ViewGroup parent) {
-        LayoutInflater inflater=context.getLayoutInflater();
-        View rowView=inflater.inflate(R.layout.list_songs, null,true);
+    public View getView(int position, View view, ViewGroup parent) {
+        LayoutInflater inflater = context.getLayoutInflater();
+        View rowView = inflater.inflate(R.layout.list_songs, null, true);
 
-        TextView titleText = (TextView) rowView.findViewById(R.id.title);
-        ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-        TextView subtitleText = (TextView) rowView.findViewById(R.id.subtitle);
+        TextView titleText = rowView.findViewById(R.id.title);
+        ImageView imageView = rowView.findViewById(R.id.icon);
+        TextView subtitleText = rowView.findViewById(R.id.subtitle);
 
         titleText.setText(maintitle.get(position));
         imageView.setImageResource(R.drawable.tune);
@@ -42,6 +42,5 @@ public class SongsListView extends ArrayAdapter<String> {
 
         return rowView;
 
-    };
-
+    }
 }

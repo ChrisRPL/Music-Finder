@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import android.os.Bundle;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -62,12 +63,11 @@ public class MusicActivity extends AppCompatActivity {
         scrollView = findViewById(R.id.scrollView);
 
 
-        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
             connected = true;
-        }
-        else{
+        } else {
             connected = false;
 
             new AlertDialog.Builder(this)
@@ -105,12 +105,11 @@ public class MusicActivity extends AppCompatActivity {
         artist.setSelected(true);
         title.setSelected(true);
 
-        if(sharedPreferences.getString("friends", "").contains(wykonawca + " - " + tytul)||sharedPreferences.getString("friends", "").contains(tytul + " - " + wykonawca)||sharedPreferences.getString("friends", "").contains(wykonawca + "-" + tytul)||sharedPreferences.getString("friends", "").contains(tytul + "-" + wykonawca)){
+        if (sharedPreferences.getString("friends", "").contains(wykonawca + " - " + tytul) || sharedPreferences.getString("friends", "").contains(tytul + " - " + wykonawca) || sharedPreferences.getString("friends", "").contains(wykonawca + "-" + tytul) || sharedPreferences.getString("friends", "").contains(tytul + "-" + wykonawca)) {
             imageView.setImageResource(R.drawable.dodane);
             first.setText("ADDED TO");
             first.setTextColor(getResources().getColor(R.color.twitter));
-            }
-        else {
+        } else {
             first.setText("ADD TO");
             first.setTextColor(getResources().getColor(R.color.light_grey));
             imageView.setImageResource(R.drawable.dodaj);
@@ -119,20 +118,19 @@ public class MusicActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!(sharedPreferences.getString("friends", "").contains(wykonawca + " - " + tytul)||sharedPreferences.getString("friends", "").contains(tytul + " - " + wykonawca)||sharedPreferences.getString("friends", "").contains(wykonawca + "-" + tytul)||sharedPreferences.getString("friends", "").contains(tytul + "-" + wykonawca))) {
+                if (!(sharedPreferences.getString("friends", "").contains(wykonawca + " - " + tytul) || sharedPreferences.getString("friends", "").contains(tytul + " - " + wykonawca) || sharedPreferences.getString("friends", "").contains(wykonawca + "-" + tytul) || sharedPreferences.getString("friends", "").contains(tytul + "-" + wykonawca))) {
                     imageView.setImageResource(R.drawable.dodane);
                     ifNotAdded = false;
-                    sharedPreferences.edit().putString("friends",sharedPreferences.getString("friends", "")  +wykonawca+"-"+tytul+"%/%").apply();
+                    sharedPreferences.edit().putString("friends", sharedPreferences.getString("friends", "") + wykonawca + "-" + tytul + "%/%").apply();
                     toIto = sharedPreferences.getString("friends", "EMPTY");
                     first.setText("ADDED TO");
                     Toast.makeText(MusicActivity.this, "Added to my songs!", Toast.LENGTH_SHORT).show();
                     first.setTextColor(getResources().getColor(R.color.twitter));
 
-                }else
-                {
+                } else {
                     imageView.setImageResource(R.drawable.dodaj);
                     ifNotAdded = true;
-                    sharedPreferences.edit().putString("friends", sharedPreferences.getString("friends", "").replace(wykonawca+"-"+tytul+"%/%", "")).apply();
+                    sharedPreferences.edit().putString("friends", sharedPreferences.getString("friends", "").replace(wykonawca + "-" + tytul + "%/%", "")).apply();
                     first.setText("ADD TO");
                     first.setTextColor(getResources().getColor(R.color.light_grey));
                 }
@@ -156,7 +154,7 @@ public class MusicActivity extends AppCompatActivity {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                youTubePlayerView.initialize(YouTubeConfig.getApiKEY(), onInitializedListener);
+                youTubePlayerView.initialize(getString(R.string.yt_player_api_key), onInitializedListener);
                 play.setVisibility(View.GONE);
                 sharedPreferences.edit().putString("mainArtist", wykonawca).apply();
                 sharedPreferences.edit().putString("mainTitle", tytul).apply();
@@ -177,8 +175,7 @@ public class MusicActivity extends AppCompatActivity {
                     scrollView.setVisibility(View.VISIBLE);
                     lyricsClicked = true;
                     showLyrics.setText("Hide lyrics");
-                }
-                else {
+                } else {
                     lyrics.setVisibility(View.INVISIBLE);
                     scrollView.setVisibility(View.INVISIBLE);
                     showLyrics.setText("Show lyrics");
